@@ -12,7 +12,7 @@ import json
 
 def get_news():
     chrome_options = Options()
-    #chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--headless')
     driver = webdriver.Chrome(options=chrome_options)
 
     url = "https://g1.globo.com/"
@@ -20,7 +20,8 @@ def get_news():
 
     print('Coletando manchetes...')
     try:
-        for i in range(0, 10):
+        for i in range(0, 500):
+                time.sleep(0.3)
                 xpath = (By.XPATH,'//*[@id="feed-placeholder"]/div/div/div[3]/a')
                 driver.execute_script("arguments[0].click();window.scrollTo(0, document.body.scrollHeight);",
                                     WebDriverWait(driver, 30,
@@ -28,9 +29,7 @@ def get_news():
                                                                         StaleElementReferenceException,)
                                                     ).until(EC.element_to_be_clickable(xpath)))
     except TimeoutException:
-        raise TimeoutError("A página não carregou dentro do tempo limite")
-    
-    time.sleep(5)
+        raise TimeoutError("timeout")
 
     news = []
     newsElem = driver.find_elements_by_xpath('//*/div/div[2]/div/a')
@@ -39,7 +38,7 @@ def get_news():
         txt = n.text
         if(txt != ''):
             news.append(txt)
-    print(news)
+    print(f"{len(news)} manchetes obtidas (raw_news.json)")
     return news
 
 def main():
